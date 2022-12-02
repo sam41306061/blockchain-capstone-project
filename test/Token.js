@@ -18,28 +18,31 @@ describe("Token", () => {
     token = await Token.deploy('THE GREEK AND GLOVER', 'PETE THE GREEK', '1000000');
   });
 
-  it("Has a name", async () => {
-    //check that name is correct
-    expect(await token.name()).to.equal("THE GREEK AND GLOVER");
-  });
-  it("Has correct symbol", async () => {
-    // check that symbol is correct
-    expect(await token.symbol()).to.equal("PETE THE GREEK");
-  });
-  it("Has correct decimal", async () => {
-    // check that decimal is correct
-    expect(await token.decimals()).to.equal("18");
-  });
 
-  it("Has correct total supply", async () => {
-    // check that decimal is correct
-    expect(await token.totalSupply()).to.equal(tokens('1000000'));
-  });
+describe('Deployment', () => {
+    //settings for the contract
+    const name = 'THE GREEK AND GLOVER';
+    const symbol = 'PETE THE GREEK';
+    const decimals = '18'
+    const totalSupply = '1000000';
+
+    it("Has a name", async () => {
+        //check that name is correct
+        expect(await token.name()).to.equal(name);
+      });
+      it("Has correct symbol", async () => {
+        // check that symbol is correct
+        expect(await token.symbol()).to.equal(symbol);
+      });
+      it("Has correct decimal", async () => {
+        // check that decimal is correct
+        expect(await token.decimals()).to.equal(decimals);
+      });
+    
+      it("Has correct total supply", async () => {
+        // check that decimal is correct
+        expect(await token.totalSupply()).to.equal(tokens(totalSupply));
+      });
 });
 
-// iteraton 1
-    // it("Has correct total supply", async () =>{
-    //     // check that decimal is correct
-    //     expect(await token.totalSupply()).to.equal('1000000000000000000000000'); 
-    // coverted 1,000,000 ether to wei https://eth-converter.com/
-    // });
+});
