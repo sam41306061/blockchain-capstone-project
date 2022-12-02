@@ -10,12 +10,13 @@
     - npx hardhat test: runs test files in project.
 
 - Why do we write tests in JS?
-    - It is easier to simulate user side events that contracts will experiance in the real world
-- if you want to call await inside a test function, the async keyword needs to be added to the top level
+    - It is easier to simulate user side events that contracts will experiance in the real world.
+- if you want to call await inside a test function, the async keyword needs to be added to the top level.
     - ex:(**/ it("Has a name", async () =>{ /** **/ it("Has a name", async () =>{/**)
 - Check ERC-20 docs when building out your contracts for compliance. 
 - utilize beforeEach function if you need to duplicate mulitple steps in Testing: 25:50
     - once utilized, speed increase of 643ms when testing
+- Decimals intiger will convert to a string when called
 
 # Resoureses links from various videos for reference. 
 • ERC-20 Standard: https://ethereum.org/en/developers/docs/standards/tokens/erc-20/
