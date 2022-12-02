@@ -15,7 +15,7 @@ describe("Token", () => {
   beforeEach(async () => {
     //Fetch token from blockchain
     const Token = await ethers.getContractFactory("Token");
-    token = await Token.deploy();
+    token = await Token.deploy('THE GREEK AND GLOVER', 'PETE THE GREEK', '1000000');
   });
 
   it("Has a name", async () => {
