@@ -5,4 +5,5 @@ import "hardhat/console.sol";
 
 contract Token {
     string public name = "THE GREEK AND GLOVER";
+    string public symbol = "PETE THE GREEK";
 }
