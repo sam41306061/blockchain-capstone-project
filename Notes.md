@@ -1,6 +1,11 @@
 # Over all concepts and take aways
 - solidty does not need semicolons after braces, it does however need them after declaring anything inside a function.
 
+# Harhat Video
+- scripts is where you can handle various parts of deployments in hardhat. 
+- structure of contract; call solidity version, set contract, call constructor, call various fuctions after to deploy. time stamp: 6:55
+- name( state variable ) = _name; (local variable)
+
 # Notes from the Smoke test video 
 - 1 ether = 1000000000000000000 wei ( 18 zeros after the decimal).
 - convert ether from wei out put in hard hat: ether.utils.formatEther()
@@ -20,6 +25,14 @@
 - utilize beforeEach function if you need to duplicate mulitple steps in Testing: 25:50
     - once utilized, speed increase of 643ms when testing
 - Decimals intiger will convert to a string when called
+
+
+# Token Balances video
+- ECR20 standard requires the following functions be included in any smart contract.
+    - balanceOf
+    - transfer
+    - transferFrom
+- Mapping utilizes key mapping pairs. 
 
 # Resoureses links from various videos for reference. 
 • ERC-20 Standard: https://ethereum.org/en/developers/docs/standards/tokens/erc-20/
