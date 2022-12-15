@@ -15,6 +15,7 @@ describe("Token", () => {
   let token; 
   let accounts; 
   let deployer;
+  let reciever; 
 
   beforeEach(async () => {
     //Fetch token from blockchain
@@ -23,6 +24,7 @@ describe("Token", () => {
     // get the first account on the list
     accounts = await ethers.getSigners();
     deployer = accounts[0]; // access first account
+    reciever = accounts[1]; // reciever account
   });
 
   describe("Deployment", () => {
@@ -55,4 +57,24 @@ describe("Token", () => {
       expect(await token.balanceOf(deployer.address)).to.equal(totalSupply);
     });
   });
+
+  describe('Sending Token', () => {
+    let amount 
+    it('Transfers Token balances', async () => {
+      // log balance before transfer
+      console.log('deployer balance before transfer', await token.balanceOf(deployer.address));
+      console.log('reciever balance before transfer', await token.balanceOf(reciever.address));
+
+      // Transfer the tokens
+      amount = tokens(100);
+      let transaction = await token.connect(deployer).transfer(reciever.address, amount); // connect wallet, account, amount
+      let result = transaction.wait(); // checks that the trans action is going to the block
+
+      // log balance after transfer
+      console.log('deployer balance after transfer', await token.balanceOf(deployer.address));
+      console.log('reciever balance after transfer', await token.balanceOf(reciever.address));
+
+      // Ensures tokens were transfered
+    })
+  })
 });
