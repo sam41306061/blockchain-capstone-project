@@ -77,7 +77,13 @@ describe("Token", () => {
     });
 
     it('Emits a Transfer event', async() => {
-      console.log(result);
+      const event = result.events[0];
+      console.log(event);
+      expect(event.event).to.equal('Transfer');
+      const args = event.args;
+      expect(event.from).to.equal(deployer.address); // who
+      expect(event.to).to.equal(reciever.address); // where
+      expect(event.value).to.equal(amount); // how much
     });
   })
 });
