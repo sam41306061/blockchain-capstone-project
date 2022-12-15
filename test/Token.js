@@ -59,22 +59,18 @@ describe("Token", () => {
   });
 
   describe('Sending Token', () => {
-    let amount 
-    it('Transfers Token balances', async () => {
-      // log balance before transfer
-      console.log('deployer balance before transfer', await token.balanceOf(deployer.address));
-      console.log('reciever balance before transfer', await token.balanceOf(reciever.address));
-
+    let amount;
+    beforeEach(async () =>{
       // Transfer the tokens
       amount = tokens(100);
-      let transaction = await token.connect(deployer).transfer(reciever.address, amount); // connect wallet, account, amount
-      let result = transaction.wait(); // checks that the trans action is going to the block
-
-      // log balance after transfer
-      console.log('deployer balance after transfer', await token.balanceOf(deployer.address));
-      console.log('reciever balance after transfer', await token.balanceOf(reciever.address));
-
+      transaction = await token.connect(deployer).transfer(reciever.address, amount); 
+      result = transaction.wait();
+    });
+   
+    it('Transfers Token balances', async () => {    
       // Ensures tokens were transfered
-    })
+      expect(await token.balanceOf(deployer.address)).to.equal(tokens(999900)); // still failing??
+      expect(await token.balanceOf(reciever.address)).to.equal(tokens(amount));
+    });
   })
 });
