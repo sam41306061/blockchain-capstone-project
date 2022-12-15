@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat"); // ethers from hardhat library
+const { result } = require("lodash");
 
 // simulate the hardhat console to make sure it works from the begining
 
@@ -59,18 +60,24 @@ describe("Token", () => {
   });
 
   describe('Sending Token', () => {
-    let amount;
+
+    let amount, transaction, result;
+
     beforeEach(async () =>{
       // Transfer the tokens
       amount = tokens(100);
       transaction = await token.connect(deployer).transfer(reciever.address, amount); 
-      result = transaction.wait();
+      result = await transaction.wait();
     });
    
     it('Transfers Token balances', async () => {    
       // Ensures tokens were transfered
-      expect(await token.balanceOf(deployer.address)).to.equal(tokens(999900)); // still failing??
-      expect(await token.balanceOf(reciever.address)).to.equal(tokens(amount));
+        expect(await token.balanceOf(deployer.address)).to.equal(tokens(999900))
+        expect(await token.balanceOf(reciever.address)).to.equal(amount)
+    });
+
+    it('Emits a Transfer event', async() => {
+      console.log(result);
     });
   })
 });
