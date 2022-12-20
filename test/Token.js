@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat"); // ethers from hardhat library
+const { result } = require("lodash");
 
 // simulate the hardhat console to make sure it works from the begining
 
@@ -12,17 +13,20 @@ describe("Token", () => {
   //container for tests
 
   // declare instance
-  let token; 
-  let accounts; 
-  let deployer;
+  let token, accounts, deployer, reciever;
 
   beforeEach(async () => {
     //Fetch token from blockchain
     const Token = await ethers.getContractFactory("Token");
-    token = await Token.deploy("THE GREEK AND GLOVER","PETE THE GREEK","1000000");
+    token = await Token.deploy(
+      "THE GREEK AND GLOVER",
+      "PETE THE GREEK",
+      "1000000"
+    );
     // get the first account on the list
     accounts = await ethers.getSigners();
     deployer = accounts[0]; // access first account
+    reciever = accounts[1]; // reciever account
   });
 
   describe("Deployment", () => {
@@ -54,5 +58,50 @@ describe("Token", () => {
       console.log(deployer.address);
       expect(await token.balanceOf(deployer.address)).to.equal(totalSupply);
     });
+  });
+
+  describe("Sending Token", () => {
+    let amount, transaction, result;
+
+    describe("Success", () => {
+      // success case testing
+      beforeEach(async () => {
+        // Transfer the tokens
+        amount = tokens(100);
+        transaction = await token
+          .connect(deployer)
+          .transfer(reciever.address, amount);
+        result = await transaction.wait();
+      });
+
+      it("Transfers Token balances", async () => {
+        // Ensures tokens were transfered
+        expect(await token.balanceOf(deployer.address)).to.equal(
+          tokens(999900)
+        );
+        expect(await token.balanceOf(reciever.address)).to.equal(amount);
+      });
+
+      it("Emits a Transfer event", async () => {
+        const event = result.events[0];
+        expect(event.event).to.equal("Transfer");
+
+        const args = event.args;
+        expect(args.from).to.equal(deployer.address); // who
+        expect(args.to).to.equal(reciever.address); // where
+        expect(args.value).to.equal(reciever.amount); // how much
+      });
+    });
+    describe('Faliure', () =>{
+      it('Rejects insufficient balances', async() =>{
+        const invalidAmount = tokens(1000000000);
+        await expect(token.connect(deployer).transfer(reciever.address, invalidAmount)).to.be.reverted; // uses the invalid amount for transfer
+      });
+
+      it('Recjects invalid recipent', async() => {
+        const amount = tokens(100)
+        await expect(token.connect(deployer).transfer('0x0001', amount)).to.be.reverted;
+      });
+    })
   });
 });
