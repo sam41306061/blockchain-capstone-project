@@ -1,6 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat"); // ethers from hardhat library
-const { result } = require("lodash");
+const { result, before } = require("lodash");
 
 // simulate the hardhat console to make sure it works from the begining
 
@@ -27,6 +27,7 @@ describe("Token", () => {
     accounts = await ethers.getSigners();
     deployer = accounts[0]; // access first account
     reciever = accounts[1]; // reciever account
+    exchange = accounts[2];
   });
 
   describe("Deployment", () => {
@@ -102,6 +103,20 @@ describe("Token", () => {
         const amount = tokens(100)
         await expect(token.connect(deployer).transfer('0x0001', amount)).to.be.reverted;
       });
-    })
+    });
+    describe('Approving tokens',() => {
+      // re-using trasaction code to be used for testing exchange test
+      let amount, transaction, result;
+      beforeEach(async () =>{
+        amount = tokens(100);
+        transaction = await token.connect(deployer).approve(exchange.address, amount);
+        result = await transaction.wait();
+      });
+      describe('Success', () => {
+        it('allocates an allowance for delegated token spending', async() =>{
+          expect(await token.allowance(deployer.address, exchange.address)).to.equal(amount) // owner and spender.address
+        });
+      });
+    });
   });
 });

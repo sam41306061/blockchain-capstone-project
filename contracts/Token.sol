@@ -11,6 +11,7 @@ contract Token {
 
     // Track balances
     mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance; // nested mapping
     // transfer
     event Transfer(address indexed from, address indexed to, uint256 vaule); // who, where, amount
 
@@ -30,7 +31,7 @@ contract Token {
         public
         returns (bool success)
     {
-        // Require that sender has enough tokens to spend 
+        // Require that sender has enough tokens to spend
         require(balanceOf[msg.sender] >= _value);
         require(_to != address(0));
         // deudct tokens from spender
@@ -40,5 +41,13 @@ contract Token {
         // emit event
         emit Transfer(msg.sender, _to, _value);
         return true;
+    }
+
+    // transfer for the exchange
+    function approve(address _spender, uint256 _value)
+        public
+        returns (bool success)
+    {
+        allowance[msg.sender][_spender] = _value; // access nested mapping for sender to get value
     }
 }
