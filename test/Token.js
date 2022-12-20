@@ -13,10 +13,7 @@ describe("Token", () => {
   //container for tests
 
   // declare instance
-  let token; 
-  let accounts; 
-  let deployer;
-  let reciever; 
+  let token, accounts, deployer, reciever; 
 
   beforeEach(async () => {
     //Fetch token from blockchain
