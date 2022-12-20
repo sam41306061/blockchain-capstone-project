@@ -92,5 +92,16 @@ describe("Token", () => {
         expect(args.value).to.equal(reciever.amount); // how much
       });
     });
+    describe('Faliure', () =>{
+      it('Rejects insufficient balances', async() =>{
+        const invalidAmount = tokens(1000000000);
+        await expect(token.connect(deployer).transfer(reciever.address, invalidAmount)).to.be.reverted; // uses the invalid amount for transfer
+      });
+
+      it('Recjects invalid recipent', async() => {
+        const amount = tokens(100)
+        await expect(token.connect(deployer).transfer('0x0001', amount)).to.be.reverted;
+      });
+    })
   });
 });
