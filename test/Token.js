@@ -13,12 +13,16 @@ describe("Token", () => {
   //container for tests
 
   // declare instance
-  let token, accounts, deployer, reciever; 
+  let token, accounts, deployer, reciever;
 
   beforeEach(async () => {
     //Fetch token from blockchain
     const Token = await ethers.getContractFactory("Token");
-    token = await Token.deploy("THE GREEK AND GLOVER","PETE THE GREEK","1000000");
+    token = await Token.deploy(
+      "THE GREEK AND GLOVER",
+      "PETE THE GREEK",
+      "1000000"
+    );
     // get the first account on the list
     accounts = await ethers.getSigners();
     deployer = accounts[0]; // access first account
@@ -56,31 +60,37 @@ describe("Token", () => {
     });
   });
 
-  describe('Sending Token', () => {
-
+  describe("Sending Token", () => {
     let amount, transaction, result;
 
-    beforeEach(async () =>{
-      // Transfer the tokens
-      amount = tokens(100);
-      transaction = await token.connect(deployer).transfer(reciever.address, amount); 
-      result = await transaction.wait();
-    });
-   
-    it('Transfers Token balances', async () => {    
-      // Ensures tokens were transfered
-        expect(await token.balanceOf(deployer.address)).to.equal(tokens(999900))
-        expect(await token.balanceOf(reciever.address)).to.equal(amount)
-    });
+    describe("Success", () => {
+      // success case testing
+      beforeEach(async () => {
+        // Transfer the tokens
+        amount = tokens(100);
+        transaction = await token
+          .connect(deployer)
+          .transfer(reciever.address, amount);
+        result = await transaction.wait();
+      });
 
-    it('Emits a Transfer event', async() => {
-      const event = result.events[0];
-      console.log(event);
-      expect(event.event).to.equal('Transfer');
-      const args = event.args;
-      expect(event.from).to.equal(deployer.address); // who
-      expect(event.to).to.equal(reciever.address); // where
-      expect(event.value).to.equal(amount); // how much
+      it("Transfers Token balances", async () => {
+        // Ensures tokens were transfered
+        expect(await token.balanceOf(deployer.address)).to.equal(
+          tokens(999900)
+        );
+        expect(await token.balanceOf(reciever.address)).to.equal(amount);
+      });
+
+      it("Emits a Transfer event", async () => {
+        const event = result.events[0];
+        expect(event.event).to.equal("Transfer");
+
+        const args = event.args;
+        expect(args.from).to.equal(deployer.address); // who
+        expect(args.to).to.equal(reciever.address); // where
+        expect(args.value).to.equal(reciever.amount); // how much
+      });
     });
-  })
+  });
 });
