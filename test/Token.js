@@ -113,7 +113,7 @@ describe("Token", () => {
         result = await transaction.wait();
       });
       describe('Success', () => {
-        it('allocates an allowance for delegated token spending', async() =>{
+        it('Allocates an allowance for delegated token spending', async() =>{
           expect(await token.allowance(deployer.address, exchange.address)).to.equal(amount) // owner and spender.address
         });
       });
