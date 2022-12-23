@@ -116,6 +116,18 @@ describe("Token", () => {
         it('Allocates an allowance for delegated token spending', async() =>{
           expect(await token.allowance(deployer.address, exchange.address)).to.equal(amount) // owner and spender.address
         });
+        it("Emits a Approval event", async () => {
+          const event = result.events[0];
+          expect(event.event).to.equal("Approval");
+  
+          const args = event.args;
+          expect(args.owner).to.equal(deployer.address); // who
+          expect(args.spender).to.equal(exchange.address); // where
+          expect(args.value).to.equal(amount); // how much
+        });
+      });
+      describe('Failure', ()=>{
+
       });
     });
   });

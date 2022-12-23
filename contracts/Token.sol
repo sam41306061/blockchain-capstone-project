@@ -13,7 +13,16 @@ contract Token {
     mapping(address => uint256) public balanceOf;
     mapping(address => mapping(address => uint256)) public allowance; // nested mapping
     // transfer
-    event Transfer(address indexed from, address indexed to, uint256 vaule); // who, where, amount
+    event Transfer(
+        address indexed from, 
+        address indexed to, 
+        uint256 vaule
+    ); // who, where, amount
+    event Approval (
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
 
     constructor(
         string memory _name,
@@ -49,5 +58,8 @@ contract Token {
         returns (bool success)
     {
         allowance[msg.sender][_spender] = _value; // access nested mapping for sender to get value
+        
+        emit Approval(msg.sender, _spender, _value); 
+        return true;
     }
 }
