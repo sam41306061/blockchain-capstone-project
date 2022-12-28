@@ -1,7 +1,5 @@
 const { expect } = require("chai");
-const { defaultPath } = require("ethers/lib/utils");
 const { ethers } = require("hardhat"); // ethers from hardhat library
-const { result, before } = require("lodash");
 
 // simulate the hardhat console to make sure it works from the begining
 
@@ -167,21 +165,30 @@ describe("Token", () => {
         expect(await token.balanceOf(reciever.address)).to.be.equal(amount); // balance update of receiver
       });
       // reset the allowance
-      it("transfer token balances", async () => {
+      it("reset token balances", async () => {
         expect(
           await token.allowance(deployer.address, exchange.address)
         ).to.be.equal(0);
       });
-      it("emits a Transfer event", async () => {
+      it("emits a transfer event", async () => {
         const event = result.events[0];
         expect(event.event).to.equal("Transfer");
 
         const args = event.args;
         expect(args.from).to.equal(deployer.address); // who
         expect(args.to).to.equal(reciever.address); // where
-        expect(args.value).to.equal(amount); // how much
+        expect(args.value).to.equal(reciever.amount); // how much
       });
-      describe("Failure", () => {});
+    });
+    describe("Failure", () => {
+      it("Rejects insufficient amounts", async () => {
+        const invalidAmount = tokens(100000000);
+        await expect(
+          token
+            .connect(exchange)
+            .transferFrom(deployer.address, reciever.address, invalidAmount)
+        ).to.be.reverted;
+      });
     });
   });
 });

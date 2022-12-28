@@ -54,7 +54,7 @@ contract Token {
         // credit tokens to reciever
         balanceOf[_to] = balanceOf[_to] + _value;
         // emit event
-        emit Transfer(msg.sender, _to, _value);
+        emit Transfer(_from, _to, _value);
     }
 
     // transfer for the exchange
