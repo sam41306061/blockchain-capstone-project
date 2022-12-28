@@ -38,29 +38,51 @@ contract Token {
     // transfer
     function transfer(address _to, uint256 _value)
         public
-        returns (bool success)
-    {
+        returns (bool success) {
         // Require that sender has enough tokens to spend
         require(balanceOf[msg.sender] >= _value);
+        _transfer(msg.sender,_to, _value);
+        return true;
+    }
+
+    // internal function transfer
+    function _transfer(address _from, address _to, uint256 _value) 
+    internal {
         require(_to != address(0));
         // deudct tokens from spender
-        balanceOf[msg.sender] = balanceOf[msg.sender] - _value;
+        balanceOf[_from] = balanceOf[_from] - _value;
         // credit tokens to reciever
         balanceOf[_to] = balanceOf[_to] + _value;
         // emit event
         emit Transfer(msg.sender, _to, _value);
-        return true;
     }
 
     // transfer for the exchange
     function approve(address _spender, uint256 _value)
         public
-        returns (bool success)
-    {
+        returns (bool success) {
         require(_spender != address(0));
         allowance[msg.sender][_spender] = _value; // access nested mapping for sender to get value
         
         emit Approval(msg.sender, _spender, _value); 
+        return true;
+    }
+
+    // transfer from other account 
+    function transferFrom(
+        address _from, 
+        address _to, 
+        uint256 _value
+    ) 
+    public 
+    returns (bool success) {
+        require (_value <= balanceOf[_from]); // make sure wallet has tokens to transfer
+        require (_value <= allowance[_from][msg.sender]); // if true, keep going otherwise stop
+        // reset the allowance
+        allowance[_from][msg.sender] = allowance[_from][msg.sender] - _value; // if they spend the allowance, reset it
+        // spend tokens
+        _transfer(_from, _to, _value);
+
         return true;
     }
 }
