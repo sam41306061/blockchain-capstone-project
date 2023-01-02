@@ -76,8 +76,8 @@ contract Token {
     ) 
     public 
     returns (bool success) {
-        require (_value <= balanceOf[_from]); // make sure wallet has tokens to transfer
-        require (_value <= allowance[_from][msg.sender]); // if true, keep going otherwise stop
+        require (_value <= balanceOf[_from], 'insufficient balance'); // make sure wallet has tokens to transfer
+        require (_value <= allowance[_from][msg.sender], 'insufficient allowance'); // if true, keep going otherwise stop
         // reset the allowance
         allowance[_from][msg.sender] = allowance[_from][msg.sender] - _value; // if they spend the allowance, reset it
         // spend tokens
