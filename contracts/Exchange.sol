@@ -33,6 +33,15 @@ contract Exchange {
         uint256 amountGive,
         uint256 timestamp
     );
+    event Cancel(
+        uint256 id,
+        address user,
+        address tokenGet,
+        uint256 amountGet,
+        address tokenGive,
+        uint256 amountGive,
+        uint256 timestamp
+    );
 
     struct _Order {
         // Attributes of an order
@@ -125,7 +134,25 @@ contract Exchange {
     function cancelOrder(uint256 _id) public {
         // fetch the order
         _Order storage _order = orders[_id]; // pulling the order out from memory
+
+        // ensure the caller of the function is the owner of the order
+        require(address(_order.user) == msg.sender); // make sure its  the same person
+        
+        //order mus exist
+        require(_order.id == _id);
+
         // cancel the order
         orderCancelled[_id] = true;
+
+        // emit the event
+        emit Cancel(
+            orderCount,
+            msg.sender,
+            _order.tokenGet,
+            _order.amountGet,
+            _order.tokenGive,
+            _order.amountGive,
+            block.timestamp
+        );
     }
 }
