@@ -1,5 +1,6 @@
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
+const { result } = require('lodash');
 
 const tokens = (n) => {
   return ethers.utils.parseUnits(n.toString(), 'ether')
@@ -195,5 +196,35 @@ describe('Exchange', () => {
         await expect(exchange.connect(user1).makeOrder(token2.address, tokens(1), token1.address, tokens(1))).to.be.reverted
       })
     })
+  })
+
+  describe('Order actions', async () => {
+    beforeEach(async () => {
+      let amount
+      // user1 deposits tokens
+      transaction = await token1.connect(user1).approve(exchange.address, amount);
+      result = await transaction.wait();
+
+      transaction = await token1.connect(user1).depositToken(token1.address, amount);
+      result = await transaction.wait();
+
+      //Make an order
+      ransaction = await token1.connect(user1).makeOrder(token2.address, amount, token1.address, amount);
+      result = await transaction.wait();
+    })
+      describe('cancelling orders', async () =>{
+        describe('Success', async () =>{
+          beforeEach(async () => {
+            transaction = await exchange.connect(user1).cancelOrder(1);
+            result = await transaction.wait()
+          })
+          it('updates cancled orders', async() => {
+            expect(await exchange.orderCancelled(1)).to.equal(true)
+          })
+        })
+        describe('Failure', async () =>{
+          
+        })
+      })
   })
 })

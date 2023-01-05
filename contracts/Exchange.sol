@@ -10,6 +10,7 @@ contract Exchange {
     mapping(address => mapping(address => uint256)) public tokens;
     mapping(uint256 => _Order) public orders;
     uint256 public orderCount;
+    mapping(uint256 => bool) public orderCancelled; // keeps the order on chain forever
 
     event Deposit(
         address token,
@@ -121,5 +122,10 @@ contract Exchange {
             block.timestamp
         );
     }
-
+    function cancelOrder(uint256 _id) public {
+        // fetch the order
+        _Order storage _order = orders[_id]; // pulling the order out from memory
+        // cancel the order
+        orderCancelled[_id] = true;
+    }
 }
