@@ -2,21 +2,19 @@
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
-// local contracts
 import "./Token.sol";
 
 contract Exchange {
     address public feeAccount;
     uint256 public feePercent;
     mapping(address => mapping(address => uint256)) public tokens;
-    //orders mapping
     mapping(uint256 => _Order) public orders;
     uint256 public orderCount;
 
     event Deposit(
-        address token, 
-        address user, 
-        uint256 amount, 
+        address token,
+        address user,
+        uint256 amount,
         uint256 balance
     );
     event Withdraw(
@@ -35,22 +33,22 @@ contract Exchange {
         uint256 timestamp
     );
 
-    // order modeling
     struct _Order {
-        // attributes of an order
-        uint256 id; // Unique identifier
-        address user; // user who made order
-        address tokenGet; // address of the token the recieve
-        uint256 amountGet; // how much they get
-        address tokenGive; // address of the token they give
-        uint256 amountGive; // how much they gave
-        uint256 timestamp; // time order was made
+        // Attributes of an order
+        uint256 id; // Unique identifier for order
+        address user; // User who made order
+        address tokenGet; // Address of the token they receive
+        uint256 amountGet; // Amount they receive
+        address tokenGive; // Address of token they give
+        uint256 amountGive; // Amount they give
+        uint256 timestamp; // When order was created
     }
 
     constructor(address _feeAccount, uint256 _feePercent) {
         feeAccount = _feeAccount;
         feePercent = _feePercent;
     }
+
 
     // ------------------------
     // DEPOSIT & WITHDRAW TOKEN
@@ -70,12 +68,13 @@ contract Exchange {
         // Ensure user has enough tokens to withdraw
         require(tokens[_token][msg.sender] >= _amount);
 
+        // Transfer tokens to user
         Token(_token).transfer(msg.sender, _amount);
 
-        // Update balance
+        // Update user balance
         tokens[_token][msg.sender] = tokens[_token][msg.sender] - _amount;
 
-        // Emit an event
+        // Emit event
         emit Withdraw(_token, msg.sender, _amount, tokens[_token][msg.sender]);
     }
 
@@ -88,7 +87,7 @@ contract Exchange {
     }
 
 
-     // ------------------------
+    // ------------------------
     // MAKE & CANCEL ORDERS
     function makeOrder(
         address _tokenGet,
@@ -122,4 +121,5 @@ contract Exchange {
             block.timestamp
         );
     }
+
 }
