@@ -163,7 +163,16 @@ contract Exchange {
         // fetch order
         _Order storage _order = orders[_id];
         // swapping tokens 
-
+        
+        // Execute the trade
+        _trade(
+            _order.id,
+            _order.user,
+            _order.tokenGet,
+            _order.amountGet,
+            _order.tokenGive,
+            _order.amountGive
+        );
     }
     function _trade(
         uint256 _orderId,
@@ -175,19 +184,26 @@ contract Exchange {
         )
         internal {
              // fee structure
-             uint256 _feeAmount = (_amountGet * feePercent) / 100; // 10% transaction fee
+             uint256 _feeAmount = (_amountGet * feePercent) / 100;// 10% transaction fee
 
             // Do trade here ...
-            // msg.sender is the user who filled the order, while _user is who created the order
-            tokens[_tokenGet][msg.sender] = tokens[_tokenGet][msg.sender] -(_amountGet + _feeAmount); // user2
-            tokens[_tokenGet][_user] = tokens[_tokenGet][_user] + _amountGet;  // order user
-            
-            // charge fees
-            tokens[_tokenGet][feeAccount] = tokens[_tokenGet][feeAccount] + _feeAmount;
+           // Execute the trade
+        // msg.sender is the user who filled the order, while _user is who created the order
+        tokens[_tokenGet][msg.sender] =
+            tokens[_tokenGet][msg.sender] -
+            (_amountGet + _feeAmount);
 
-            // inverse of prodcedure above
-            tokens[_tokenGive][_user] = tokens[_tokenGive][_user] - _amountGive;
-            tokens[_tokenGive][msg.sender] = tokens[_tokenGive][msg.sender] + _amountGive;
+        tokens[_tokenGet][_user] = tokens[_tokenGet][_user] + _amountGet;
+
+        // Charge fees
+        tokens[_tokenGet][feeAccount] =
+            tokens[_tokenGet][feeAccount] +
+            _feeAmount;
+
+        tokens[_tokenGive][_user] = tokens[_tokenGive][_user] - _amountGive;
+        tokens[_tokenGive][msg.sender] =
+            tokens[_tokenGive][msg.sender] +
+            _amountGive;
 
            
 
