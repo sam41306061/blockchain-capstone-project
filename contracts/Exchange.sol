@@ -11,6 +11,7 @@ contract Exchange {
     mapping(uint256 => _Order) public orders;
     uint256 public orderCount;
     mapping(uint256 => bool) public orderCancelled; // keeps the order on chain forever
+    mapping(uint256 => bool) public orderFilled;
 
     event Deposit(
         address token,
@@ -40,6 +41,16 @@ contract Exchange {
         uint256 amountGet,
         address tokenGive,
         uint256 amountGive,
+        uint256 timestamp
+    );
+    event Trade(
+        uint256 id,
+        address user,
+        address tokenGet,
+        uint256 amountGet,
+        address tokenGive,
+        uint256 amountGive,
+        address creator,
         uint256 timestamp
     );
 
@@ -109,7 +120,7 @@ contract Exchange {
         require(balanceOf(_tokenGive, msg.sender) >= _amountGive);
 
         // Instantiate a new order
-        orderCount = orderCount + 1;
+        orderCount++; // could also be orderCount = orderCount + 1; 
         orders[orderCount] = _Order(
             orderCount,
             msg.sender,
@@ -160,6 +171,14 @@ contract Exchange {
     // EXECUTING ORDERS
 
     function fillOrder(uint256 _id) public {
+        // 1. Must be valid orderID
+        require(_id > 0 && _id <= orderCount, 'Order does ont exist');
+        // 2. Order cant be filled
+        require(!orderFilled[_id]);
+        // 3. Order can't be cancelled
+        require(!orderCancelled[_id]); // bang
+
+    
         // fetch order
         _Order storage _order = orders[_id];
         // swapping tokens 
@@ -173,6 +192,10 @@ contract Exchange {
             _order.tokenGive,
             _order.amountGive
         );
+
+        //make order as filled
+        orderFilled[_order.id] = true;
+
     }
     function _trade(
         uint256 _orderId,
@@ -205,7 +228,17 @@ contract Exchange {
             tokens[_tokenGive][msg.sender] +
             _amountGive;
 
-           
+           // emit trade event
+           emit Trade(
+            orderCount,
+            msg.sender,
+            _tokenGet,
+            _amountGet,
+            _tokenGive,
+            _amountGive,
+            _user,
+            block.timestamp
+        );
 
     }
 }
