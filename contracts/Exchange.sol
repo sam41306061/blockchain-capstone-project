@@ -10,7 +10,7 @@ contract Exchange {
     mapping(address => mapping(address => uint256)) public tokens;
     mapping(uint256 => _Order) public orders;
     uint256 public orderCount;
-    mapping(uint256 => bool) public orderCancelled; // keeps the order on chain forever
+    mapping(uint256 => bool) public orderCancelled;
     mapping(uint256 => bool) public orderFilled;
 
     event Deposit(
@@ -110,6 +110,7 @@ contract Exchange {
 
     // ------------------------
     // MAKE & CANCEL ORDERS
+
     function makeOrder(
         address _tokenGet,
         uint256 _amountGet,
@@ -120,7 +121,7 @@ contract Exchange {
         require(balanceOf(_tokenGive, msg.sender) >= _amountGive);
 
         // Instantiate a new order
-        orderCount++; // could also be orderCount = orderCount + 1; 
+        orderCount ++;
         orders[orderCount] = _Order(
             orderCount,
             msg.sender,
@@ -142,22 +143,23 @@ contract Exchange {
             block.timestamp
         );
     }
-    function cancelOrder(uint256 _id) public {
-        // fetch the order
-        _Order storage _order = orders[_id]; // pulling the order out from memory
 
-        // ensure the caller of the function is the owner of the order
-        require(address(_order.user) == msg.sender); // make sure its  the same person
-        
-        //order mus exist
+    function cancelOrder(uint256 _id) public {
+        // Fetch order
+        _Order storage _order = orders[_id];
+
+        // Ensure the caller of the function is the owner of the order
+        require(address(_order.user) == msg.sender);
+
+        // Order must exist
         require(_order.id == _id);
 
-        // cancel the order
+        // Cancel the order
         orderCancelled[_id] = true;
 
-        // emit the event
+        // Emit event
         emit Cancel(
-            orderCount,
+            _order.id,
             msg.sender,
             _order.tokenGet,
             _order.amountGet,
@@ -167,22 +169,21 @@ contract Exchange {
         );
     }
 
+
     // ------------------------
     // EXECUTING ORDERS
 
     function fillOrder(uint256 _id) public {
-        // 1. Must be valid orderID
-        require(_id > 0 && _id <= orderCount, 'Order does ont exist');
-        // 2. Order cant be filled
+        // 1. Must be valid orderId
+        require(_id > 0 && _id <= orderCount, "Order does not exist");
+        // 2. Order can't be filled
         require(!orderFilled[_id]);
         // 3. Order can't be cancelled
-        require(!orderCancelled[_id]); // bang
+        require(!orderCancelled[_id]);
 
-    
-        // fetch order
+        // Fetch order
         _Order storage _order = orders[_id];
-        // swapping tokens 
-        
+
         // Execute the trade
         _trade(
             _order.id,
@@ -193,24 +194,23 @@ contract Exchange {
             _order.amountGive
         );
 
-        //make order as filled
+        // Mark order as filled
         orderFilled[_order.id] = true;
-
     }
+
     function _trade(
         uint256 _orderId,
-        address _user, 
+        address _user,
         address _tokenGet,
         uint256 _amountGet,
         address _tokenGive,
         uint256 _amountGive
-        )
-        internal {
-             // fee structure
-             uint256 _feeAmount = (_amountGet * feePercent) / 100;// 10% transaction fee
+    ) internal {
+        // Fee is paid by the user who filled the order (msg.sender)
+        // Fee is deducted from _amountGet
+        uint256 _feeAmount = (_amountGet * feePercent) / 100;
 
-            // Do trade here ...
-           // Execute the trade
+        // Execute the trade
         // msg.sender is the user who filled the order, while _user is who created the order
         tokens[_tokenGet][msg.sender] =
             tokens[_tokenGet][msg.sender] -
@@ -228,9 +228,9 @@ contract Exchange {
             tokens[_tokenGive][msg.sender] +
             _amountGive;
 
-           // emit trade event
-           emit Trade(
-            orderCount,
+        // Emit trade event
+        emit Trade(
+            _orderId,
             msg.sender,
             _tokenGet,
             _amountGet,
@@ -239,6 +239,6 @@ contract Exchange {
             _user,
             block.timestamp
         );
-
     }
+
 }

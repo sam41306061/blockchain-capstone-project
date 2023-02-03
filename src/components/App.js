@@ -1,57 +1,97 @@
 import { useEffect } from 'react';
-import { ethers } from 'ethers';
-import TOKEN_ABI from '../abis/Token.json' // from artifacts/contracts/Token.json
-import config from '../config.json' // chain address 
-import "../App.css";
+import { useDispatch } from 'react-redux';
+import config from '../config.json';
+
+import {
+  loadProvider,
+  loadNetwork,
+  loadAccount,
+  loadTokens,
+  loadExchange,
+  loadAllOrders,
+  subscribeToEvents
+} from '../store/interactions';
+
+import Navbar from './Navbar'
+import Markets from './Markets'
+import Balance from './Balance'
+import Order from './Order'
+import PriceChart from './PriceChart'
+import Transactions from './Transactions'
+import Trades from './Trades'
+import OrderBook from './OrderBook'
+import Alert from './Alert'
 
 function App() {
+  const dispatch = useDispatch()
 
-  // basic smoke test
   const loadBlockchainData = async () => {
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
-    console.log(accounts[0])
+    // Connect Ethers to blockchain
+    const provider = loadProvider(dispatch)
 
-    // // Connect Ethers to blockchain
-    // abi is the instrcutions that you want to communicate with on the front end. 
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const { chainId } = await provider.getNetwork()
-    console.log(chainId)
+    // Fetch current network's chainId (e.g. hardhat: 31337, kovan: 42)
+    const chainId = await loadNetwork(provider, dispatch)
 
-    // Token Smart Contract
-    const token = new ethers.Contract(config[chainId].DApp.address, TOKEN_ABI, provider)
-    console.log(token.address)
-    const symbol = await token.symbol()
-    console.log(symbol)
-  }
-    
-    useEffect(() => {
-      loadBlockchainData()
+    // Reload page when network changes
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload()
     })
+
+    // Fetch current account & balance from Metamask when changed
+    window.ethereum.on('accountsChanged', () => {
+      loadAccount(provider, dispatch)
+    })
+
+    // Load token smart contracts
+    const DApp = config[chainId].DApp
+    const mETH = config[chainId].mETH
+    await loadTokens(provider, [DApp.address, mETH.address], dispatch)
+
+    // Load exchange smart contract
+    const exchangeConfig = config[chainId].exchange
+    const exchange = await loadExchange(provider, exchangeConfig.address, dispatch)
+
+    // Fetch all orders: open, filled, cancelled
+    loadAllOrders(provider, exchange, dispatch)
+
+    // Listen to events
+    subscribeToEvents(exchange, dispatch)
+  }
+
+  useEffect(() => {
+    loadBlockchainData()
+  })
 
   return (
     <div>
-      {/* Navbar */}
 
-      <main className="exchange grid">
-        <section className="exchange__section--left grid">
-          {/* Markets */}
+      <Navbar />
 
-          {/* Balance */}
+      <main className='exchange grid'>
+        <section className='exchange__section--left grid'>
 
-          {/* Order */}
+          <Markets />
+
+          <Balance />
+
+          <Order />
+
         </section>
-        <section className="exchange__section--right grid">
-          {/* PriceChart */}
+        <section className='exchange__section--right grid'>
 
-          {/* Transactions */}
+          <PriceChart />
 
-          {/* Trades */}
+          <Transactions />
 
-          {/* OrderBook */}
+          <Trades />
+
+          <OrderBook />
+
         </section>
       </main>
 
-      {/* Alert */}
+      <Alert />
+
     </div>
   );
 }
