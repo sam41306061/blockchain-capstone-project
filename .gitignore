@@ -17,10 +17,12 @@
 .env.development.local
 .env.test.local
 .env.production.local
+add_ts_nocheck.sh
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
 
 node_modules
 .env

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useSelector } from 'react-redux';
 
 import Chart from 'react-apexcharts';

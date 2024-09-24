@@ -1,5 +1,5 @@
+//@ts-nocheck
 import { useSelector, useDispatch } from 'react-redux'
-
 import config from '../config.json'
 
 import { loadTokens } from '../store/interactions'

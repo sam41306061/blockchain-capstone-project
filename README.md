@@ -13,3 +13,7 @@ npx hardhat node
 node scripts/sample-script.js
 npx hardhat help
 ```
+
+# custom script for changing Js files.
+
+find .{FILE_NAMES_GO_HERE} -name "\*.js" -exec bash -c 'mv "$0" "${0%.js}.tsx"' {} \;

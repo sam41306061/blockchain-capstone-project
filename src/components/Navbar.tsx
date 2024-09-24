@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useSelector, useDispatch } from 'react-redux'
 import Blockies from 'react-blockies'
 

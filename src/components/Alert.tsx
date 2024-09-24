@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useRef, useEffect } from 'react'
 import { useSelector } from 'react-redux';
 
@@ -7,7 +8,6 @@ import config from '../config.json';
 
 const Alert = () => {
   const alertRef = useRef(null)
-
   const network = useSelector(state => state.provider.network)
   const account = useSelector(state => state.provider.account)
   const isPending = useSelector(state => state.exchange.transaction.isPending)
