@@ -23,6 +23,12 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "eth": "npx hardhat node",
+    "comp": "npx hardhat compile",
+    "clean": "npx hardhat clean",
+    "hardtest": "npx hardhat test",
+    "deploy": "npx hardhat run --network localhost src/scripts/1_deploy.tsx",
+    "seed": "npx hardhat run --network localhost src/scripts/2_seed-exchange.tsx",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
